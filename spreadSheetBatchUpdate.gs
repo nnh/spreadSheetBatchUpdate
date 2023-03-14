@@ -148,6 +148,37 @@ function getRangeSetValueRequest(sheetId, startRowIndex, startColumnIndex, value
     }
   };
 }
+function editNumberFormat(type='TEXT', pattern=null){
+  const numberFormat = {};
+  numberFormat.type = type;
+  if (pattern){
+    numberFormat.pattern = pattern;
+  }
+  return {'numberFormat': numberFormat};
+}
+function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, effectiveFormat){
+  const range = {
+    'sheetId': sheetId,
+    'startRowIndex': startRowIndex,
+    'endRowIndex': endRowIndex + 1,
+    'startColumnIndex': startColumnIndex,
+    'endColumnIndex': endColumnIndex + 1,
+  }
+  const values = {
+    'values': [
+      {
+        effectiveFormat,    
+      },
+    ],
+  }
+  return { 
+    'updateCells': {
+      'range': range,
+      'rows': values,
+      'fields': 'effectiveFormat',
+    }
+  };
+}
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
