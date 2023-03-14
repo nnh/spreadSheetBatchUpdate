@@ -64,6 +64,95 @@ function getAllCellWrapRequest(sheetId){
     }
   }
 }
+class BorderStyle{
+  constructor(colorStyle=null){
+    this.colorStyle = !colorStyle ? {
+                                      'rgbColor': {
+                                        'red': 0,
+                                        'green': 0,
+                                        'blue': 0,
+                                        'alpha': 0,
+                                      }, 
+                                    }
+                                  : colorStyle;
+  }
+  setBorderSolid(){
+    return {
+      'style': 'SOLID',
+      'colorStyle': this.colorStyle,
+    }
+  }
+  setBorderNone(){
+    return {
+      'style': 'NONE',
+      'colorStyle': this.colorStyle,
+    }
+  }
+}
+function createBorderStyle(){
+  return new BorderStyle();
+}
+function setBorderSolid(){
+  throw new Error('Call this method after calling createBorderStyle.');
+}
+(function(global){
+  function BorderStyle(){
+    this.name = 'borderStyle';
+  }
+  BorderStyle.prototype.setBorderSolid = function(){
+    return;
+  }
+  global.BorderStyle = BorderStyle;
+})(this);
+function setBorderNone(){
+  throw new Error('Call this method after calling createBorderStyle.');
+}
+(function(global){
+  function BorderStyle(){
+    this.name = 'borderStyle';
+  }
+  BorderStyle.prototype.setBorderNone = function(){
+    return;
+  }
+  global.BorderStyle = BorderStyle;
+})(this);
+/**
+ * @param {string} sheetId sheet id.
+ * @param {Object} rowCol {startRowIndex, startColumnIndex, endRowIndex, endColumnIndex}
+ * @param {Object} top {style, width, color {}}
+ */
+function getUpdateBordersRequest(sheetId, rowCol, borders){
+  const request = {
+    'updateBorders': {
+      'range': {
+        'sheetId': sheetId,
+        'startRowIndex': rowCol.startRowIndex,
+        'endRowIndex': rowCol.endRowIndex,
+        'startColumnIndex': rowCol.startColumnIndex,
+        'endColumnIndex': rowCol.endColumnIndex,
+      },
+    }
+  }
+  if (borders.top){
+    request.updateBorders.top = borders.top;
+  }
+  if (borders.bottom){
+    request.updateBorders.bottom = borders.bottom;
+  }
+  if (borders.left){
+    request.updateBorders.left = borders.left;
+  }
+  if (borders.right){
+    request.updateBorders.right = borders.right;
+  }
+  if (borders.innerHorizontal){
+    request.updateBorders.innerHorizontal = borders.innerHorizontal;
+  }
+  if (borders.innerVertical){
+    request.updateBorders.innerVertical = borders.innerVertical;
+  }
+  return request;
+}
 /**
  * Set automatic row height settings.
  * @param {string} sheetId sheet id.
