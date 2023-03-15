@@ -221,6 +221,21 @@ function getSetColWidthRequest(sheetId, width=120, startIndex, endIndex){
   }
 }
 /**
+ * Set the font to bold.
+ * @param none.
+ * @return none.
+ */
+function getFontBoldRequest(){
+  const userEnteredFormat = {
+    'userEnteredFormat': {
+      'textFormat': {
+        'bold': true,
+      },
+    }
+  }
+  return userEnteredFormat;
+}
+/**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
  * @param {number} startRowIndex start row index, ex.) B4 => 3.
@@ -237,15 +252,18 @@ function getRangeSetValueRequest(sheetId, startRowIndex, startColumnIndex, value
     }
   };
 }
-function editNumberFormat(type='TEXT', pattern=null){
-  const numberFormat = {};
-  numberFormat.type = type;
-  if (pattern){
-    numberFormat.pattern = pattern;
-  }
-  return {'numberFormat': numberFormat};
-}
-function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, effectiveFormat){
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @param {Object} userEnteredFormat
+ * @param {string} fields ex.) 'userEnteredFormat.textFormat.bold'.
+ * @return {Object} Request body.
+ */
+function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat, fields){
   const range = {
     'sheetId': sheetId,
     'startRowIndex': startRowIndex,
@@ -253,20 +271,29 @@ function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endR
     'startColumnIndex': startColumnIndex,
     'endColumnIndex': endColumnIndex + 1,
   }
-  const values = {
-    'values': [
-      {
-        effectiveFormat,    
-      },
-    ],
+  let colArray = [];
+  for (let col = startColumnIndex; col <= endColumnIndex; col++){
+    colArray.push(userEnteredFormat);
+  }
+  let values = [];
+  for (let row = startRowIndex; row <= endRowIndex; row++){
+    values = [...values, {'values': colArray}];
   }
   return { 
     'updateCells': {
       'range': range,
       'rows': values,
-      'fields': 'effectiveFormat',
+      'fields': fields,
     }
   };
+}
+function editNumberFormat(type='TEXT', pattern=null){
+  const numberFormat = {};
+  numberFormat.type = type;
+  if (pattern){
+    numberFormat.pattern = pattern;
+  }
+  return {'numberFormat': numberFormat};
 }
 /**
  * Create and return a request body.
