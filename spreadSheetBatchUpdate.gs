@@ -261,6 +261,7 @@ function getFontBoldRequest(){
   }
   return userEnteredFormat;
 }
+
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
@@ -285,12 +286,51 @@ function getRangeSetValueRequest(sheetId, startRowIndex, startColumnIndex, value
  * @param {number} startColumnIndex start column index, ex.) B4 => 1.
  * @param {number} endRowIndex end row index, ex.) B4 => 3.
  * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @return {Object} Request body.
+ */
+function getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex){
+  const range = {
+    'sheetId': sheetId,
+    'startRowIndex': startRowIndex,
+    'endRowIndex': endRowIndex + 1,
+    'startColumnIndex': startColumnIndex,
+    'endColumnIndex': endColumnIndex + 1,
+  }
+  return range;
+}
+/**
+ * Create and return a request body.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @param {Object} data set data.
+ * @return {Object} Request body.
+ */
+function getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, data){
+  let colArray = [];
+  for (let col = startColumnIndex; col <= endColumnIndex; col++){
+    colArray.push(data);
+  }
+  let values = [];
+  for (let row = startRowIndex; row <= endRowIndex; row++){
+    values = [...values, {'values': colArray}];
+  }
+  return values;
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
  * @param {Object} userEnteredFormat
  * @param {string} fields ex.) 'userEnteredFormat.textFormat.bold'.
  * @return {Object} Request body.
  */
 function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat, fields){
-  const range = {
+/*  const range = {
     'sheetId': sheetId,
     'startRowIndex': startRowIndex,
     'endRowIndex': endRowIndex + 1,
@@ -304,7 +344,9 @@ function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endR
   let values = [];
   for (let row = startRowIndex; row <= endRowIndex; row++){
     values = [...values, {'values': colArray}];
-  }
+  }*/
+  const range = getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex);
+  const values = getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat);
   return { 
     'updateCells': {
       'range': range,
