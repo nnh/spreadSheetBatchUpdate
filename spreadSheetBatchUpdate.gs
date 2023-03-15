@@ -220,10 +220,36 @@ function getSetColWidthRequest(sheetId, width=120, startIndex, endIndex){
     }
   }
 }
+function editNumberFormat(type='TEXT', pattern=null){
+  const numberFormat = {};
+  numberFormat.type = type;
+  if (pattern){
+    numberFormat.pattern = pattern;
+  }
+  const res = {
+    'userEnteredFormat': {
+      'numberFormat': numberFormat,
+    }
+  }
+  return res;
+}
+/**
+ * Sets the horizontal alignment of text in a cell.
+ * @param {string} horizontalAlign 'LEFT' or 'CENTER' or 'RIGHT'.
+ * @return {Object} Request body.
+ */
+function getHorizontalAlignmentRequest(horizontalAlign){
+  const userEnteredFormat = {
+    'userEnteredFormat': {
+      'horizontalAlignment': horizontalAlign,
+    }
+  }
+  return userEnteredFormat;
+}
 /**
  * Set the font to bold.
  * @param none.
- * @return none.
+ * @return {Object} Request body.
  */
 function getFontBoldRequest(){
   const userEnteredFormat = {
@@ -286,14 +312,6 @@ function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endR
       'fields': fields,
     }
   };
-}
-function editNumberFormat(type='TEXT', pattern=null){
-  const numberFormat = {};
-  numberFormat.type = type;
-  if (pattern){
-    numberFormat.pattern = pattern;
-  }
-  return {'numberFormat': numberFormat};
 }
 /**
  * Create and return a request body.
