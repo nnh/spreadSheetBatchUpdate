@@ -330,21 +330,6 @@ function getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnInd
  * @return {Object} Request body.
  */
 function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat, fields){
-/*  const range = {
-    'sheetId': sheetId,
-    'startRowIndex': startRowIndex,
-    'endRowIndex': endRowIndex + 1,
-    'startColumnIndex': startColumnIndex,
-    'endColumnIndex': endColumnIndex + 1,
-  }
-  let colArray = [];
-  for (let col = startColumnIndex; col <= endColumnIndex; col++){
-    colArray.push(userEnteredFormat);
-  }
-  let values = [];
-  for (let row = startRowIndex; row <= endRowIndex; row++){
-    values = [...values, {'values': colArray}];
-  }*/
   const range = getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex);
   const values = getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat);
   return { 
