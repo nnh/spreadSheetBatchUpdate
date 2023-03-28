@@ -292,9 +292,11 @@ function getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex
   const range = {
     'sheetId': sheetId,
     'startRowIndex': startRowIndex,
-    'endRowIndex': endRowIndex + 1,
     'startColumnIndex': startColumnIndex,
     'endColumnIndex': endColumnIndex + 1,
+  }
+  if (endRowIndex){
+    range.endRowIndex = endRowIndex + 1;
   }
   return range;
 }
@@ -337,6 +339,31 @@ function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endR
       'range': range,
       'rows': values,
       'fields': fields,
+    }
+  };
+}
+/**
+ * Create and return a request body.
+ * @param {string}[][] hiddenValues ex.['0', '1', '2'], If not filtering [].
+ * @param {number} columnIndex target column index.
+ * @param {Object} range
+ * @return {Object} Request body.
+ */
+function getBasicFilterRequest(hiddenValues=[], columnIndex, range){
+  return { 
+    'setBasicFilter': {
+      'filter': {
+        'range': range,
+        'filterSpecs': [
+          {
+            'filterCriteria': {
+              'hiddenValues': hiddenValues,
+            },
+            'columnIndex' : columnIndex,
+          },
+        ],
+
+      }
     }
   };
 }
