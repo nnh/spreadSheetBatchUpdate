@@ -233,6 +233,42 @@ function editNumberFormat(type='TEXT', pattern=null){
   }
   return res;
 }
+function editCellFormatBackgroundColorStyle(arg){
+  const format = {};
+  if (arg.backgroundColorStyle){
+    /* ex. 
+      'rgbColor': {
+        'red': 0,
+        'green': 0,
+        'blue' : 1,
+        'alpha' : 0,
+      }
+    */
+    format.backgroundColorStyle = arg.backgroundColorStyle;
+  }
+  const res = {
+    'userEnteredFormat': format,
+  }
+  return res;
+}
+function editCellFormatBackgroundColorStyle(arg){
+  const format = {};
+  if (arg.backgroundColorStyle){
+    /* ex. 
+      'rgbColor': {
+        'red': 0,
+        'green': 0,
+        'blue' : 1,
+        'alpha' : 0,
+      }
+    */
+    format.backgroundColorStyle = arg.backgroundColorStyle;
+  }
+  const res = {
+    'userEnteredFormat': format,
+  }
+  return res;
+}
 /**
  * Sets the horizontal alignment of text in a cell.
  * @param {string} horizontalAlign 'LEFT' or 'CENTER' or 'RIGHT'.
@@ -261,7 +297,26 @@ function getFontBoldRequest(){
   }
   return userEnteredFormat;
 }
-
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} dimension ROWS or COLUMNS.
+ * @param {number} startIndex start column or row index.
+ * @param {number} endIndex end column or row index.
+ * @return {Object} Request body.
+ */
+function getdelRowColRequest(sheetId, dimension, startIndex, endIndex){
+  return { 
+    'deleteDimension': {
+      'range': {
+        'sheetId': sheetId,
+        'dimension': dimension, // 
+        'startIndex': startIndex,
+        'endIndex': endIndex,
+      },
+    }
+  };
+}
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
