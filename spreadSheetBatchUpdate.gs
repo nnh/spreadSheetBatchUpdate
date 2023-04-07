@@ -300,7 +300,29 @@ function getFontBoldRequest(){
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
- * @param {number} dimension ROWS or COLUMNS.
+ * @param {number} dimension 'ROWS' or 'COLUMNS'.
+ * @param {number} startIndex start column or row index.
+ * @param {number} endIndex end column or row index.
+ * @param {boolean} inheritFromBefore
+ * @return {Object} Request body.
+ */
+function getInsertRowColRequest(sheetId, dimension, startIndex, endIndex, inheritFromBefore=true){
+  return { 
+    'insertDimension': {
+      'range': {
+        'sheetId': sheetId,
+        'dimension': dimension, 
+        'startIndex': startIndex,
+        'endIndex': endIndex,
+      },
+      "inheritFromBefore": inheritFromBefore,
+    }
+  };
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} dimension 'ROWS' or 'COLUMNS'.
  * @param {number} startIndex start column or row index.
  * @param {number} endIndex end column or row index.
  * @return {Object} Request body.
@@ -310,7 +332,7 @@ function getdelRowColRequest(sheetId, dimension, startIndex, endIndex){
     'deleteDimension': {
       'range': {
         'sheetId': sheetId,
-        'dimension': dimension, // 
+        'dimension': dimension, 
         'startIndex': startIndex,
         'endIndex': endIndex,
       },
