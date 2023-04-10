@@ -439,7 +439,6 @@ function getBasicFilterRequest(hiddenValues=[], columnIndex, range){
             'columnIndex' : columnIndex,
           },
         ],
-
       }
     }
   };
