@@ -64,6 +64,95 @@ function getAllCellWrapRequest(sheetId){
     }
   }
 }
+class BorderStyle{
+  constructor(colorStyle=null){
+    this.colorStyle = !colorStyle ? {
+                                      'rgbColor': {
+                                        'red': 0,
+                                        'green': 0,
+                                        'blue': 0,
+                                        'alpha': 0,
+                                      }, 
+                                    }
+                                  : colorStyle;
+  }
+  setBorderSolid(){
+    return {
+      'style': 'SOLID',
+      'colorStyle': this.colorStyle,
+    }
+  }
+  setBorderNone(){
+    return {
+      'style': 'NONE',
+      'colorStyle': this.colorStyle,
+    }
+  }
+}
+function createBorderStyle(){
+  return new BorderStyle();
+}
+function setBorderSolid(){
+  throw new Error('Call this method after calling createBorderStyle.');
+}
+(function(global){
+  function BorderStyle(){
+    this.name = 'borderStyle';
+  }
+  BorderStyle.prototype.setBorderSolid = function(){
+    return;
+  }
+  global.BorderStyle = BorderStyle;
+})(this);
+function setBorderNone(){
+  throw new Error('Call this method after calling createBorderStyle.');
+}
+(function(global){
+  function BorderStyle(){
+    this.name = 'borderStyle';
+  }
+  BorderStyle.prototype.setBorderNone = function(){
+    return;
+  }
+  global.BorderStyle = BorderStyle;
+})(this);
+/**
+ * @param {string} sheetId sheet id.
+ * @param {Object} rowCol {startRowIndex, startColumnIndex, endRowIndex, endColumnIndex}
+ * @param {Object} top {style, width, color {}}
+ */
+function getUpdateBordersRequest(sheetId, rowCol, borders){
+  const request = {
+    'updateBorders': {
+      'range': {
+        'sheetId': sheetId,
+        'startRowIndex': rowCol.startRowIndex,
+        'endRowIndex': rowCol.endRowIndex,
+        'startColumnIndex': rowCol.startColumnIndex,
+        'endColumnIndex': rowCol.endColumnIndex,
+      },
+    }
+  }
+  if (borders.top){
+    request.updateBorders.top = borders.top;
+  }
+  if (borders.bottom){
+    request.updateBorders.bottom = borders.bottom;
+  }
+  if (borders.left){
+    request.updateBorders.left = borders.left;
+  }
+  if (borders.right){
+    request.updateBorders.right = borders.right;
+  }
+  if (borders.innerHorizontal){
+    request.updateBorders.innerHorizontal = borders.innerHorizontal;
+  }
+  if (borders.innerVertical){
+    request.updateBorders.innerVertical = borders.innerVertical;
+  }
+  return request;
+}
 /**
  * Set automatic row height settings.
  * @param {string} sheetId sheet id.
@@ -131,6 +220,125 @@ function getSetColWidthRequest(sheetId, width=120, startIndex, endIndex){
     }
   }
 }
+function editNumberFormat(type='TEXT', pattern=null){
+  const numberFormat = {};
+  numberFormat.type = type;
+  if (pattern){
+    numberFormat.pattern = pattern;
+  }
+  const res = {
+    'userEnteredFormat': {
+      'numberFormat': numberFormat,
+    }
+  }
+  return res;
+}
+function editCellFormatBackgroundColorStyle(arg){
+  const format = {};
+  if (arg.backgroundColorStyle){
+    /* ex. 
+      'rgbColor': {
+        'red': 0,
+        'green': 0,
+        'blue' : 1,
+        'alpha' : 0,
+      }
+    */
+    format.backgroundColorStyle = arg.backgroundColorStyle;
+  }
+  const res = {
+    'userEnteredFormat': format,
+  }
+  return res;
+}
+function editCellFormatBackgroundColorStyle(arg){
+  const format = {};
+  if (arg.backgroundColorStyle){
+    /* ex. 
+      'rgbColor': {
+        'red': 0,
+        'green': 0,
+        'blue' : 1,
+        'alpha' : 0,
+      }
+    */
+    format.backgroundColorStyle = arg.backgroundColorStyle;
+  }
+  const res = {
+    'userEnteredFormat': format,
+  }
+  return res;
+}
+/**
+ * Sets the horizontal alignment of text in a cell.
+ * @param {string} horizontalAlign 'LEFT' or 'CENTER' or 'RIGHT'.
+ * @return {Object} Request body.
+ */
+function getHorizontalAlignmentRequest(horizontalAlign){
+  const userEnteredFormat = {
+    'userEnteredFormat': {
+      'horizontalAlignment': horizontalAlign,
+    }
+  }
+  return userEnteredFormat;
+}
+/**
+ * Set the font to bold.
+ * @param none.
+ * @return {Object} Request body.
+ */
+function getFontBoldRequest(){
+  const userEnteredFormat = {
+    'userEnteredFormat': {
+      'textFormat': {
+        'bold': true,
+      },
+    }
+  }
+  return userEnteredFormat;
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} dimension 'ROWS' or 'COLUMNS'.
+ * @param {number} startIndex start column or row index.
+ * @param {number} endIndex end column or row index.
+ * @param {boolean} inheritFromBefore
+ * @return {Object} Request body.
+ */
+function getInsertRowColRequest(sheetId, dimension, startIndex, endIndex, inheritFromBefore=true){
+  return { 
+    'insertDimension': {
+      'range': {
+        'sheetId': sheetId,
+        'dimension': dimension, 
+        'startIndex': startIndex,
+        'endIndex': endIndex,
+      },
+      "inheritFromBefore": inheritFromBefore,
+    }
+  };
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} dimension 'ROWS' or 'COLUMNS'.
+ * @param {number} startIndex start column or row index.
+ * @param {number} endIndex end column or row index.
+ * @return {Object} Request body.
+ */
+function getdelRowColRequest(sheetId, dimension, startIndex, endIndex){
+  return { 
+    'deleteDimension': {
+      'range': {
+        'sheetId': sheetId,
+        'dimension': dimension, 
+        'startIndex': startIndex,
+        'endIndex': endIndex,
+      },
+    }
+  };
+}
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
@@ -145,6 +353,94 @@ function getRangeSetValueRequest(sheetId, startRowIndex, startColumnIndex, value
       'range': getRangeGrid(sheetId, startRowIndex, startColumnIndex, values),
       'rows': editSetValues(values),
       'fields': 'userEnteredValue',
+    }
+  };
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @return {Object} Request body.
+ */
+function getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex){
+  const range = {
+    'sheetId': sheetId,
+    'startRowIndex': startRowIndex,
+    'startColumnIndex': startColumnIndex,
+    'endColumnIndex': endColumnIndex + 1,
+  }
+  if (endRowIndex){
+    range.endRowIndex = endRowIndex + 1;
+  }
+  return range;
+}
+/**
+ * Create and return a request body.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @param {Object} data set data.
+ * @return {Object} Request body.
+ */
+function getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, data){
+  let colArray = [];
+  for (let col = startColumnIndex; col <= endColumnIndex; col++){
+    colArray.push(data);
+  }
+  let values = [];
+  for (let row = startRowIndex; row <= endRowIndex; row++){
+    values = [...values, {'values': colArray}];
+  }
+  return values;
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} startRowIndex start row index, ex.) B4 => 3.
+ * @param {number} startColumnIndex start column index, ex.) B4 => 1.
+ * @param {number} endRowIndex end row index, ex.) B4 => 3.
+ * @param {number} endColumnIndex end column index, ex.) B4 => 1.
+ * @param {Object} userEnteredFormat
+ * @param {string} fields ex.) 'userEnteredFormat.textFormat.bold'.
+ * @return {Object} Request body.
+ */
+function getRangeSetFormatRequest(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat, fields){
+  const range = getRangeGridByIdx(sheetId, startRowIndex, startColumnIndex, endRowIndex, endColumnIndex);
+  const values = getRowsByIdx(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex, userEnteredFormat);
+  return { 
+    'updateCells': {
+      'range': range,
+      'rows': values,
+      'fields': fields,
+    }
+  };
+}
+/**
+ * Create and return a request body.
+ * @param {string}[][] hiddenValues ex.['0', '1', '2'], If not filtering [].
+ * @param {number} columnIndex target column index.
+ * @param {Object} range
+ * @return {Object} Request body.
+ */
+function getBasicFilterRequest(hiddenValues=[], columnIndex, range){
+  return { 
+    'setBasicFilter': {
+      'filter': {
+        'range': range,
+        'filterSpecs': [
+          {
+            'filterCriteria': {
+              'hiddenValues': hiddenValues,
+            },
+            'columnIndex' : columnIndex,
+          },
+        ],
+
+      }
     }
   };
 }
