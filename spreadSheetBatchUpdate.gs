@@ -153,6 +153,59 @@ function getUpdateBordersRequest(sheetId, rowCol, borders){
   }
   return request;
 }
+class SetRgbColor{
+  constructor(){
+  }
+  gray(){
+    const rgbColor = {
+      'rgbColor': {
+        'red': 0.5,
+        'green': 0.5,
+        'blue' : 0.5,
+        'alpha' : 0.5,
+      },
+    }
+    return rgbColor;
+  }
+  white(){
+    const rgbColor = {
+      'rgbColor': {
+        'red': 1,
+        'green': 1,
+        'blue' : 1,
+        'alpha' : 1,
+      },
+    }
+    return rgbColor;
+  }
+}
+function createRgbColor(){
+  return new SetRgbColor();
+}
+function white(){
+  throw new Error('Call this method after calling createRgbColor.');
+}
+(function(global){
+  function RgbColor(){
+    this.name = 'rgbColor';
+  }
+  RgbColor.prototype.white = function(){
+    return;
+  }
+  global.RgbColor = RgbColor;
+})(this);
+function gray(){
+  throw new Error('Call this method after calling createRgbColor.');
+}
+(function(global){
+  function RgbColor(){
+    this.name = 'rgbColor';
+  }
+  RgbColor.prototype.gray = function(){
+    return;
+  }
+  global.RgbColor = RgbColor;
+})(this);
 /**
  * Set automatic row height settings.
  * @param {string} sheetId sheet id.
@@ -503,6 +556,39 @@ function getRangeGrid(sheetId, startRowIndex, startColumnIndex, values){
     'startColumnIndex': startColumnIndex,
     'endColumnIndex': endColumnIndex
   }
+}
+function setAddConditionalFormatRuleNumberEq(range, 
+                                             condition= '=0' , 
+                                             foregroundColorStyle = {'rgbColor': {'red':0, 'green':0 ,'blue':0 ,'alpha':0}}, 
+                                             backgroundColorStyle = {'rgbColor': {'red':1, 'green':1 ,'blue':1 ,'alpha':0}},
+                                             type = 'NUMBER_EQ',
+                                             index = 0){
+  return [
+    {
+      'addConditionalFormatRule': {
+        'rule': {
+          'ranges': range,
+          'booleanRule': {
+            'condition': {
+              'type': type,
+              'values': [
+                {
+                  'userEnteredValue': condition
+                },
+              ],
+            },
+            'format': {
+              'textFormat': {
+                'foregroundColorStyle': foregroundColorStyle,
+              },
+              'backgroundColorStyle': backgroundColorStyle,
+            }, 
+          },
+        },
+        'index': index,
+      },
+    },
+  ];
 }
 /**
  * @param {number} spreadsheetId
