@@ -496,6 +496,33 @@ function getBasicFilterRequest(hiddenValues=[], columnIndex, range){
     }
   };
 }
+class UpdateSheetProperties{
+  constructor(){
+    this.res = {
+      'updateSheetProperties': {
+        'properties': {
+          'sheetId': null,
+        },
+        'fields': null,
+      },
+    };
+  }
+  exec_(sheetId, fields, value){
+    this.res.updateSheetProperties.properties['sheetId'] = sheetId;
+    this.res.updateSheetProperties.properties[fields] = value;
+    this.res.updateSheetProperties.fields = fields;
+    return this.res;
+  }
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @param {number} index 
+ * @return {Object} Request body.
+ */
+function moveSheetRequest(sheetId, index=0){
+  return new UpdateSheetProperties().exec_(sheetId, 'index', index);
+}
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
@@ -503,14 +530,18 @@ function getBasicFilterRequest(hiddenValues=[], columnIndex, range){
  * @return {Object} Request body.
  */
 function editRenameSheetRequest(sheetId, title){
+  return new UpdateSheetProperties().exec_(sheetId, 'title', title);
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
+ * @return {Object} Request body.
+ */
+function editDeleteSheetRequest(sheetId){
   return {
-    'updateSheetProperties': {
-      'properties': {
-        'sheetId': sheetId,
-        'title': title,
-      },
-      'fields': 'title',
-    },
+    'deleteSheet': {
+      'sheetId': sheetId,
+    }
   }
 }
 /**
