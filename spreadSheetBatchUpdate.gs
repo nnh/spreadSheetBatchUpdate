@@ -517,6 +517,15 @@ class UpdateSheetProperties{
 /**
  * Create and return a request body.
  * @param {string} sheetId sheet id.
+ * @param {boolean} flag true for hidden, false for displayed.
+ * @return {Object} Request body.
+ */
+function hiddenSheetRequest(sheetId, flag=true){
+  return new UpdateSheetProperties().exec_(sheetId, 'hidden', flag);
+}
+/**
+ * Create and return a request body.
+ * @param {string} sheetId sheet id.
  * @param {number} index 
  * @return {Object} Request body.
  */
